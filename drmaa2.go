@@ -1153,7 +1153,7 @@ func (job *Job) GetJobTemplate() (*JobTemplate, error) {
 
 // GetState returns the current state of the job.
 func (job *Job) GetState() JobState {
-	if ji, err := job.GetJobInfo(); err != nil {
+	if ji, err := job.GetJobInfo(); err == nil {
 		return ji.State
 	}
 	return Undetermined
