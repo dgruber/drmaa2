@@ -302,6 +302,9 @@ const ZeroTime = int64(C.DRMAA2_ZERO_TIME)
 // Special timeout value: Wait probably infinitly 
 const InfiniteTime = int64(C.DRMAA2_INFINITE_TIME)
 
+// Special time value: Time or date not set
+const UnsetTime = int64(C.DRMAA2_UNSET_TIME)
+
 // Capabilities are optional functionalities defined by
 // the DRMAA2 standard.
 type Capability int
