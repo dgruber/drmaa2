@@ -692,7 +692,7 @@ type Job struct {
 type JobInfo struct {
 	// reference to the void* pointer which
 	// is used for extensions
-	Extension
+	Extension         `xml:"-" json:"-"`
 	Id                string
 	ExitStatus        int
 	TerminatingSignal string
@@ -736,12 +736,12 @@ type ArrayJob struct {
 }
 
 type Queue struct {
-	Extension
-	Name string
+	Extension `xml:"-" json:"-"`
+	Name      string
 }
 
 type Machine struct {
-	Extension
+	Extension      `xml:"-" json:"-"`
 	Name           string
 	Available      bool
 	Sockets        int64
@@ -756,7 +756,7 @@ type Machine struct {
 }
 
 type JobTemplate struct {
-	Extension
+	Extension         `xml:"-" json:"-"`
 	RemoteCommand     string
 	Args              []string
 	SubmitAsHold      bool
@@ -790,7 +790,7 @@ type JobTemplate struct {
 }
 
 type ReservationTemplate struct {
-	Extension
+	Extension         `xml:"-" json:"-"`
 	Name              string
 	StartTime         time.Time
 	EndTime           time.Time
