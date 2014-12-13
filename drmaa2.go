@@ -667,23 +667,23 @@ type MonitoringSession struct {
 }
 
 type JobSession struct {
-	Name string            // public name of job session
+	Name string            `json:"name"` // public name of job session
 	js   C.drmaa2_jsession // pointer to C drmaa2 job session type
 }
 
 type ReservationSession struct {
-	name string
+	Name string `json:"name"`
 	rs   C.drmaa2_rsession
 }
 
 type ReservationInfo struct {
-	ReservationId        string
-	ReservationName      string
-	ReservationStartTime time.Time
-	ReservationEndTime   time.Time
-	ACL                  []string
-	ReservedSlots        int64
-	ReservedMachines     []string
+	ReservationId        string    `json:"reservationId"`
+	ReservationName      string    `json:"reservationName"`
+	ReservationStartTime time.Time `json:"reservationStartTime"`
+	ReservationEndTime   time.Time `json:"reservationEndTime"`
+	ACL                  []string  `json:"acl"`
+	ReservedSlots        int64     `json:"reservedSlots"`
+	ReservedMachines     []string  `json:"reservedMachines"`
 }
 
 type Job struct {
@@ -696,22 +696,22 @@ type JobInfo struct {
 	// reference to the void* pointer which
 	// is used for extensions
 	Extension         `xml:"-" json:"-"`
-	Id                string
-	ExitStatus        int
-	TerminatingSignal string
-	Annotation        string
-	State             JobState
-	SubState          string
-	AllocatedMachines []string
-	SubmissionMachine string
-	JobOwner          string
-	Slots             int64
-	QueueName         string
-	WallclockTime     time.Duration
-	CPUTime           int64
-	SubmissionTime    time.Time
-	DispatchTime      time.Time
-	FinishTime        time.Time
+	Id                string        `json:"id"`
+	ExitStatus        int           `json:"exitStatus"`
+	TerminatingSignal string        `json:"terminationSignal"`
+	Annotation        string        `json:"annotation"`
+	State             JobState      `json:"state"`
+	SubState          string        `json:"subState"`
+	AllocatedMachines []string      `json:"allocatedMachines"`
+	SubmissionMachine string        `json:"submissionMachine"`
+	JobOwner          string        `json:"jobOwner"`
+	Slots             int64         `json:"slots"`
+	QueueName         string        `json:"queueName"`
+	WallclockTime     time.Duration `json:"wallockTime"`
+	CPUTime           int64         `json:"cpuTime"`
+	SubmissionTime    time.Time     `json:"submissionTime"`
+	DispatchTime      time.Time     `json:"dispatchTime"`
+	FinishTime        time.Time     `json:"finishTime"`
 }
 
 // CreateJobInfo creates a JobInfo object where all values are initialized
@@ -740,79 +740,79 @@ type ArrayJob struct {
 
 type Queue struct {
 	Extension `xml:"-" json:"-"`
-	Name      string
+	Name      string `xml:"name"`
 }
 
 type Machine struct {
 	Extension      `xml:"-" json:"-"`
-	Name           string
-	Available      bool
-	Sockets        int64
-	CoresPerSocket int64
-	ThreadsPerCore int64
-	Load           float64
-	PhysicalMemory int64
-	VirtualMemory  int64
-	Architecture   CPU
-	OSVersion      Version
-	OS             OS
+	Name           string  `json:"name"`
+	Available      bool    `json:"available"`
+	Sockets        int64   `json:"sockets"`
+	CoresPerSocket int64   `json:"coresPerSocket"`
+	ThreadsPerCore int64   `json:"threadsPerCore"`
+	Load           float64 `json:"load"`
+	PhysicalMemory int64   `json:"physicalMemory"`
+	VirtualMemory  int64   `json:"virtualMemory"`
+	Architecture   CPU     `json:"architecture"`
+	OSVersion      Version `json:"osVersion"`
+	OS             OS      `json:"os"`
 }
 
 type JobTemplate struct {
 	Extension         `xml:"-" json:"-"`
-	RemoteCommand     string
-	Args              []string
-	SubmitAsHold      bool
-	ReRunnable        bool
-	JobEnvironment    map[string]string
-	WorkingDirectory  string
-	JobCategory       string
-	Email             []string
-	EmailOnStarted    bool
-	EmailOnTerminated bool
-	JobName           string
-	InputPath         string
-	OutputPath        string
-	ErrorPath         string
-	JoinFiles         bool
-	ReservationId     string
-	QueueName         string
-	MinSlots          int64
-	MaxSlots          int64
-	Priority          int64
-	CandidateMachines []string
-	MinPhysMemory     int64
-	MachineOs         string
-	MachineArch       string
-	StartTime         time.Time
-	DeadlineTime      time.Time
-	StageInFiles      map[string]string
-	StageOutFiles     map[string]string
-	ResourceLimits    map[string]string
-	AccountingId      string
+	RemoteCommand     string            `json:"remoteCommand"`
+	Args              []string          `json:"args"`
+	SubmitAsHold      bool              `json:"submitAsHold"`
+	ReRunnable        bool              `json:"reRunnable"`
+	JobEnvironment    map[string]string `json:"jobEnvironment"`
+	WorkingDirectory  string            `json:"workingDirectory"`
+	JobCategory       string            `json:"jobCategory"`
+	Email             []string          `json:"email"`
+	EmailOnStarted    bool              `json:"emailOnStarted"`
+	EmailOnTerminated bool              `json:"emailOnTerminated"`
+	JobName           string            `json:"jobName"`
+	InputPath         string            `json:"inputPath"`
+	OutputPath        string            `json:"outputPath"`
+	ErrorPath         string            `json:"errorPath"`
+	JoinFiles         bool              `json:"joinFiles"`
+	ReservationId     string            `json:"reservationId"`
+	QueueName         string            `json:"queueName"`
+	MinSlots          int64             `json:"minSlots"`
+	MaxSlots          int64             `json:"maxSlots"`
+	Priority          int64             `json:"priority"`
+	CandidateMachines []string          `json:"candidateMachines"`
+	MinPhysMemory     int64             `json:"minPhysMemory"`
+	MachineOs         string            `json:"machineOs"`
+	MachineArch       string            `json:"machineArch"`
+	StartTime         time.Time         `json:"startTime"`
+	DeadlineTime      time.Time         `json:"deadlineTime"`
+	StageInFiles      map[string]string `json:"stageInFiles"`
+	StageOutFiles     map[string]string `json:"stageOutFiles"`
+	ResourceLimits    map[string]string `json:"resourceLimits"`
+	AccountingId      string            `json:"accountingString"`
 }
 
 type ReservationTemplate struct {
 	Extension         `xml:"-" json:"-"`
-	Name              string
-	StartTime         time.Time
-	EndTime           time.Time
-	Duration          time.Duration
-	MinSlots          int64
-	MaxSlots          int64
-	JobCategory       string
-	UsersACL          []string
-	CandidateMachines []string
-	MinPhysMemory     int64
-	MachineOs         string
-	MachineArch       string
+	Name              string        `json:"name"`
+	StartTime         time.Time     `json:"startTime"`
+	EndTime           time.Time     `json:"endTime"`
+	Duration          time.Duration `json:"duration"`
+	MinSlots          int64         `json:"minSlots"`
+	MaxSlots          int64         `json:"maxSlots"`
+	JobCategory       string        `json:"jobCategory"`
+	UsersACL          []string      `json:"userACL"`
+	CandidateMachines []string      `json:"candidateMachines"`
+	MinPhysMemory     int64         `json:"minPhysMemory"`
+	MachineOs         string        `json:"machineOs"`
+	MachineArch       string        `json:"machineArch"`
 }
 
 type Reservation struct {
-	SessionName   string
-	Contact       string
-	Template      ReservationTemplate
-	ReservationId string
+	SessionName   string              `json:"sessionName"`
+	Contact       string              `json:"contact"`
+	Template      ReservationTemplate `json:"template"`
+	ReservationId string              `json:"reservationId"`
 }
 
 // this is needed since there is a difference between "" and nil
@@ -1605,10 +1605,10 @@ const (
 )
 
 type Notification struct {
-	Evt         Event
-	JobId       string
-	SessionName string
-	State       JobState
+	Evt         Event    `json:"event"`
+	JobId       string   `json:"jobId"`
+	SessionName string   `json:"sessionName"`
+	State       JobState `json:"jobState"`
 }
 
 // A Callback is a function which works on the notification
@@ -1886,7 +1886,7 @@ func (rs *ReservationSession) GetContact() (string, error) {
 
 // TODO(dg) Returns the name of the reservation session
 func (rs *ReservationSession) GetSessionName() (string, error) {
-	return rs.name, nil
+	return rs.Name, nil
 }
 
 // TODO(dg) Returns a reservation object based on the AR id
