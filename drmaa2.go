@@ -19,7 +19,7 @@ Copyright 2014 Daniel Gruber, http://www.gridengine.eu
 // other implementations when available.
 // Please consult the DRMAA2 standard documents for more detailed
 // information (http://www.ogf.org). More examples will also be
-// published on my blog at http://www.gridengine.eu. 
+// published on my blog at http://www.gridengine.eu.
 package drmaa2
 
 import (
@@ -49,7 +49,7 @@ drmaa2_jarray malloc_array_job() {
    ja->session_name = NULL;
    ja->job_list = NULL;
    return ja;
-} 
+}
 
 drmaa2_jtemplate malloc_jtemplate() {
    drmaa2_jtemplate jt = (drmaa2_jtemplate) malloc(sizeof(drmaa2_jtemplate_s));
@@ -215,7 +215,7 @@ func (ext *Extension) describeExtension(t StructType, extensionName string) (str
 	return "", makeLastError()
 }
 
-// Returns the description of an implementation specific 
+// Returns the description of an implementation specific
 // JobTemplate extension as a string.
 func (jt *JobTemplate) DescribeExtension(extensionName string) (string, error) {
 	// good candidate for an init function in the session manager
@@ -299,7 +299,7 @@ func (v *Version) String() string {
 // Special timeout value: Don't wait
 const ZeroTime = int64(C.DRMAA2_ZERO_TIME)
 
-// Special timeout value: Wait probably infinitly 
+// Special timeout value: Wait probably infinitly
 const InfiniteTime = int64(C.DRMAA2_INFINITE_TIME)
 
 // Special time value: Time or date not set
@@ -580,7 +580,7 @@ func (js JobState) String() string {
 	return "Unset"
 }
 
-// TODO UNSET_ENUM can't be mapped to a JobState 
+// TODO UNSET_ENUM can't be mapped to a JobState
 // because it is not from that type -> use
 // Undetermined instead
 var jobStateMap = map[C.drmaa2_jstate]JobState{
@@ -595,7 +595,7 @@ var jobStateMap = map[C.drmaa2_jstate]JobState{
 }
 
 // convertGoStateToC returns the DRMAA2 C API state which
-// is the equivalent to the Go API counterpart. 
+// is the equivalent to the Go API counterpart.
 func convertGoStateToC(s JobState) (state C.drmaa2_jstate) {
 	switch s {
 	case Undetermined:
@@ -651,8 +651,8 @@ func makeLastError() *Error {
 	return &err
 }
 
-// TODO(dg) A Create Method which initializes the values and 
-// also does initialization about capabilities, 
+// TODO(dg) A Create Method which initializes the values and
+// also does initialization about capabilities,
 // versions etc. ?!?
 type SessionManager struct {
 	//drmsName     string
@@ -861,7 +861,7 @@ func convertGoJtemplateToC(jt JobTemplate) C.drmaa2_jtemplate {
 	// machineOs
 	// machineArch
 	// startTime
-	// deadlineTime 
+	// deadlineTime
 	cjt.stageInFiles = convertGoDictToC(jt.StageInFiles)
 	cjt.stageOutFiles = convertGoDictToC(jt.StageOutFiles)
 	cjt.resourceLimits = convertGoDictToC(jt.ResourceLimits)
@@ -882,7 +882,7 @@ func convertGoJobInfoToC(ji JobInfo) C.drmaa2_jinfo {
 	}
 	cji.terminatingSignal = convertGoStringToC(ji.TerminatingSignal)
 	cji.annotation = convertGoStringToC(ji.Annotation)
-	// TODO check spec 
+	// TODO check spec
 	if ji.State != Unset {
 		cji.jobState = convertGoStateToC(ji.State)
 	}
@@ -893,8 +893,8 @@ func convertGoJobInfoToC(ji JobInfo) C.drmaa2_jinfo {
 	//cji.slots = C.longlong(ji.Slots)
 	cji.queueName = convertGoStringToC(ji.QueueName)
 
-	// TODO 
-	// cji.wallclockTime 
+	// TODO
+	// cji.wallclockTime
 	// cji.cpuTime
 	// cji.submissionTime
 	// cji.dispatchTime
@@ -903,7 +903,7 @@ func convertGoJobInfoToC(ji JobInfo) C.drmaa2_jinfo {
 	return cji
 }
 
-// Converts a element from a DRMAA2 list into 
+// Converts a element from a DRMAA2 list into
 // the C counterpart and treat it like a void*
 // pointer.
 func convertListElement(element interface{}) unsafe.Pointer {
@@ -919,7 +919,7 @@ func convertListElement(element interface{}) unsafe.Pointer {
 	return nil
 }
 
-// Data Type conversion 
+// Data Type conversion
 func convertCStringListToGo(cl C.drmaa2_string_list) []string {
 	// TODO Cgecj if it is NULL
 	length := int64(C.drmaa2_list_size(C.drmaa2_list(cl)))
@@ -1014,7 +1014,7 @@ func (job *Job) GetId() string {
 	return job.id
 }
 
-// A job session name is a (per user) unique identifier 
+// A job session name is a (per user) unique identifier
 // of the job session. It is stored in the cluster scheduler
 // or in the underlying DRMAA2 C implementation. It is
 // persistent until it gets reaped by DestroyJobSession()
@@ -1067,7 +1067,7 @@ func goJobState(state C.drmaa2_jstate) JobState {
 
 // goTime reates a point in Time out of a C time stamp
 func goTime(sec C.time_t) time.Time {
-	// if time C.DRMAA2_UNSET_TIME 
+	// if time C.DRMAA2_UNSET_TIME
 	return time.Unix((int64)(sec), (int64)(0))
 }
 
@@ -1163,7 +1163,7 @@ func (job *Job) GetState() JobState {
 }
 
 // Creates a JobInfo object from the job containing
-// more detailed information about the job. 
+// more detailed information about the job.
 func (job *Job) GetJobInfo() (*JobInfo, error) {
 	cjob := convertGoJobToC(*job)
 	if cjob == nil {
@@ -1249,7 +1249,7 @@ func (job *Job) Terminate() error {
 // Blocking wait until the job is started. The timeout
 // prefents that the call is blocking endlessly. Special
 // timeouts are available by the constants InfiniteTime
-// and ZeroTime. 
+// and ZeroTime.
 func (job *Job) WaitStarted(timeout int64) error {
 	cjob := convertGoJobToC(*job)
 	//defer C.drmaa2_j_free(&cjob)
@@ -1315,7 +1315,7 @@ func (sm *SessionManager) OpenMonitoringSession(sessionName string) (*Monitoring
 	return &ms, nil
 }
 
-// Closes the MonitoringSession. TODO as method or as part of SessionManager? 
+// Closes the MonitoringSession. TODO as method or as part of SessionManager?
 func (ms *MonitoringSession) CloseMonitoringSession() error {
 	err_cstr := C.drmaa2_close_msession(ms.ms)
 	if err_cstr == C.DRMAA2_SUCCESS {
@@ -1405,8 +1405,8 @@ func createMachineList(ml C.drmaa2_list) []Machine {
 }
 
 // GetAllJobs returns a slice of jobs currently visible in the monitoring session.
-// The JobInfo parameter specifies a filter for the job. For instance 
-// when a certain job number is set in the JobInfo object, then 
+// The JobInfo parameter specifies a filter for the job. For instance
+// when a certain job number is set in the JobInfo object, then
 func (ms *MonitoringSession) GetAllJobs(ji *JobInfo) (jobs []Job, err error) {
 	// Create the job filter
 	var cji C.drmaa2_jinfo
@@ -1447,7 +1447,7 @@ func (ms *MonitoringSession) GetAllQueues(names []string) (queues []Queue, err e
 }
 
 // GetAllMachines returns a list of all machines configured in cluster if the argument
-// is nil. Otherwise a list of available machines which matches the 
+// is nil. Otherwise a list of available machines which matches the
 // given names is returned.
 func (ms *MonitoringSession) GetAllMachines(names []string) (machines []Machine, err error) {
 	var arg C.drmaa2_string_list
@@ -1620,13 +1620,13 @@ type CallbackFunction func(notification Notification)
 
 // export callbackExecution
 func callbackExecution(notify C.drmaa2_notification) {
-	// Forward the C notification struct to a Go 
+	// Forward the C notification struct to a Go
 	// channel which is subscribed by a coroutine
 	// (started by RegisterEventNotification). This
 	// coroutine calls all registered callback functions.
 }
 
-// TODO(dg) This function needs to store a CallbackFunction and 
+// TODO(dg) This function needs to store a CallbackFunction and
 // calls it whenever a event occured.
 func (sm *SessionManager) RegisterEventNotification(callback *CallbackFunction) error {
 	// TODO store the callback function
@@ -1661,7 +1661,8 @@ func (js *JobSession) GetSessionName() (string, error) {
 	return js.Name, nil
 }
 
-// Returns all job categories specified for the job session.
+// GetJobCategories returns all job categories specified in the
+// job session or globally.
 func (js *JobSession) GetJobCategories() ([]string, error) {
 	clist := (C.drmaa2_list)(C.drmaa2_jsession_get_job_categories(js.js))
 	if clist != nil {
@@ -1672,9 +1673,21 @@ func (js *JobSession) GetJobCategories() ([]string, error) {
 	return nil, makeLastError()
 }
 
-// Returns a list of all jobs currently running in the given JobSession.
-func (js *JobSession) GetJobs() ([]Job, error) {
-	cjlist := (C.drmaa2_list)(C.drmaa2_jsession_get_jobs(js.js, nil))
+// GetJobs returns a list of all jobs currently attached to the
+// given JobSession. If a JobInfo argument unequal nil is given
+// then this JobInfo element is used for filtering the result.
+// For more details about filtering consider the details of the
+// DRMAA2 specificaton.
+func (js *JobSession) GetJobs(ji *JobInfo) ([]Job, error) {
+	// Create the job filter
+	var cji C.drmaa2_jinfo
+	if ji != nil {
+		cji = convertGoJobInfoToC(*ji)
+		defer C.drmaa2_jinfo_free(&cji)
+	} else {
+		cji = nil
+	}
+	cjlist := (C.drmaa2_list)(C.drmaa2_jsession_get_jobs(js.js, cji))
 	if cjlist == nil {
 		return nil, makeLastError()
 	}
@@ -1739,7 +1752,7 @@ func (js *JobSession) RunJob(jt JobTemplate) (*Job, error) {
 // instances are submitted and how the instances are numbered (1,10,1
 // denotes 10 array job instances numbered from 1 to 10). The maxParallel
 // parameter specifies how many of the array job instances should run
-// at parallel as maximum (when resources are contrainted then less 
+// at parallel as maximum (when resources are contrainted then less
 // instances could run).
 func (js *JobSession) RunBulkJobs(jt JobTemplate, begin int, end int, step int, maxParallel int) (*ArrayJob, error) {
 	cjtemplate := convertGoJtemplateToC(jt)
@@ -1774,7 +1787,7 @@ func (js *JobSession) waitAny(isStarted bool, jobs []Job, timeout int64) (*Job, 
 // Waits until any of the given jobs is started (usually in running state).
 // The timeout determines after how many seconds the method should abort,
 // even when none of the given jobs was started. Special timeout values are
-// InfiniteTime and ZeroTime. 
+// InfiniteTime and ZeroTime.
 func (js *JobSession) WaitAnyStarted(jobs []Job, timeout int64) (*Job, error) {
 	return js.waitAny(true, jobs, timeout)
 }
@@ -1911,7 +1924,7 @@ func (r *Reservation) GetId() (string, error) {
 	return "", nil
 }
 
-// TODO(dg) Returns the name of the reservation 
+// TODO(dg) Returns the name of the reservation
 func (r *Reservation) GetSessionName() (string, error) {
 	// TODO implement
 	return "", nil
