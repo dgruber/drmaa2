@@ -1,5 +1,7 @@
 drmaa2
 ======
+[![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/dgruber/drmaa2)
+[![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://raw.githubusercontent.com/dgruber/drmaa2/master/COPYING)
 
 A Go (#golang) API for job submission, job workflow management, and HPC cluster monitoring based on the open OGF DRMAA2 standard (http://www.drmaa.org / http://www.ogf.org).
 
