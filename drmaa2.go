@@ -1273,14 +1273,22 @@ func (job *Job) WaitTerminated(timeout int64) error {
 	return nil
 }
 
-// Creates a new persistent job session and opens it.
+// CreateJobSession creates a new persistent job session and opens it. The
+// returned JobSession object contains a reference to a DRMAA2 C jobsession
+// object and hence needs to be freed manually.
 func (sm *SessionManager) CreateJobSession(sessionName, contact string) (*JobSession, error) {
 	var js JobSession
 	// convert parameters
 	name := C.CString(sessionName)
 	defer C.free(unsafe.Pointer(name))
-	// DRMAA2 C API call
-	js.js = C.drmaa2_create_jsession(name, C.drmaa2_string(nil))
+	if contact == "" {
+		// default in Univa Grid Engine case
+		ctct := C.drmaa2_string(nil)
+		js.js = C.drmaa2_create_jsession(name, ctct)
+	} else {
+		ctct := C.drmaa2_string(C.CString(contact))
+		js.js = C.drmaa2_create_jsession(name, ctct)
+	}
 	// convert error back to Go
 	if js.js == nil {
 		// an error happended - create an error
@@ -1801,29 +1809,31 @@ func (js *JobSession) WaitAnyTerminated(jobs []Job, timeout int64) (*Job, error)
 
 // ArrayJob methods.
 
-// Returns the identifier of the ArrayJob.
+// GetId returns the job identifier of the ArrayJob.
 func (aj *ArrayJob) GetId() string {
 	return aj.id
 }
 
-// Returns a list of individual jobs the ArrayJob
+// GetJobs returns a list of individual jobs the ArrayJob
 // consists of.
 func (aj *ArrayJob) GetJobs() []Job {
 	return aj.jobs
 }
 
-// Returns the name of the job session the array job
+// GetSessionName returns the name of the job session the array job
 // belongs to.
 func (aj *ArrayJob) GetSessionName() string {
 	return aj.sessionName
 }
 
-// Returns the JobTemplate of an ArrayJob.
+// GetJobTemplate returns a pointer to a job template of the ArrayJob.
 func (aj *ArrayJob) GetJobTemplate() *JobTemplate {
 	return &aj.jt
 }
 
-// Suspends all running tasks of an ArrayJob.
+// Suspend stops all running tasks of an ArrayJob without
+// destroying them (usually a SIGSTP signal is send to the
+// processes the job consists of).
 func (aj *ArrayJob) Suspend() error {
 	cjob := convertGoArrayJobToC(*aj)
 	defer C.drmaa2_jarray_free(&cjob)
@@ -1833,7 +1843,7 @@ func (aj *ArrayJob) Suspend() error {
 	return nil
 }
 
-// Resumes all suspended tasks of an ArrayJob.
+// Resume continues all suspended tasks of an ArrayJob.
 func (aj *ArrayJob) Resume() error {
 	cjob := convertGoArrayJobToC(*aj)
 	defer C.drmaa2_jarray_free(&cjob)
@@ -1843,7 +1853,7 @@ func (aj *ArrayJob) Resume() error {
 	return nil
 }
 
-// Sets all tasks of an ArrayJob to hold.
+// Hold puts all tasks of an ArrayJob into hold state.
 func (aj *ArrayJob) Hold() error {
 	cjob := convertGoArrayJobToC(*aj)
 	defer C.drmaa2_jarray_free(&cjob)
