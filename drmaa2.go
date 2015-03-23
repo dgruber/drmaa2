@@ -1,5 +1,5 @@
 /*
-Copyright 2014,2015 Daniel Gruber, http://www.gridengine.eu
+Copyright 2014, 2015 Daniel Gruber, http://www.gridengine.eu
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -158,25 +158,25 @@ func listExtensions(t StructType) []string {
 
 // ListExtensions returns a string list containing all implementation specific
 // extensions of the JobTemplate object.
-func (structType *JobTemplate) ListExtensions() []string {
+func (jt *JobTemplate) ListExtensions() []string {
 	return listExtensions(JobTemplateType)
 }
 
 // ListExtensions returns a string list containing all implementation specific
 // extensions of the Machine object.
-func (structType *Machine) ListExtensions() []string {
+func (m *Machine) ListExtensions() []string {
 	return listExtensions(MachineInfoType)
 }
 
 // ListExtensions returns a string list containing all implementation specific
 // extensions of the Queue object.
-func (structType *Queue) ListExtensions() []string {
+func (q *Queue) ListExtensions() []string {
 	return listExtensions(QueueInfoType)
 }
 
 // ListExtensions returns a string list containing all implementation specific
 // extensions of the JobInfo object.
-func (structType *JobInfo) ListExtensions() []string {
+func (ji *JobInfo) ListExtensions() []string {
 	return listExtensions(JobInfoType)
 }
 
@@ -310,7 +310,7 @@ const InfiniteTime = int64(C.DRMAA2_INFINITE_TIME)
 // Special time value: Time or date not set
 const UnsetTime = int64(C.DRMAA2_UNSET_TIME)
 
-// Capabiliy is a type which represents the availability of optional
+// Capability is a type which represents the availability of optional
 // functionality of the DRMAA2 implementation. Option functionality is
 // defined by the DRMAA2 standard but not mandatory to implement.
 type Capability int
