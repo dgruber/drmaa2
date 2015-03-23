@@ -1,5 +1,5 @@
 /*
-Copyright 2014 Daniel Gruber, http://www.gridengine.eu
+Copyright 2014,2015 Daniel Gruber, http://www.gridengine.eu
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@ Copyright 2014 Daniel Gruber, http://www.gridengine.eu
    limitations under the License.
 */
 
-// Implements the DRMAA2 Go language binding based on top of
-// Univa's DRMAA2 C API implementation. Should work also on
-// other implementations when available.
+// Package drmaa2 implements the DRMAA2 Go language binding based on top of
+// Univa's DRMAA2 C API implementation. Should work also on other implementations
+// which are compatible to the DRMAA2 standard.
 // Please consult the DRMAA2 standard documents for more detailed
 // information (http://www.ogf.org). More examples will also be
 // published on my blog at http://www.gridengine.eu.
@@ -91,9 +91,8 @@ import "C"
 
 // Interface definitions
 
-// In order to make extension functions dependend
-// from the type of the struct we need to store
-// the type somewhere.
+// StructType is a type which represents the type of
+// an extensible structure.
 type StructType int
 
 const (
@@ -106,7 +105,7 @@ const (
 	NotificationType
 )
 
-// Extension struct which is embedded in DRMAA2 objects
+// Extension is a struct which is embedded in DRMAA2 objects
 // which are extensible.
 type Extension struct {
 	SType         StructType        // Stores the type of the struct
@@ -114,8 +113,8 @@ type Extension struct {
 	ExtensionList map[string]string // stores the extension requests as string
 }
 
-// The Drmaa2Extensible interface lists all functions required for DRMAA2
-// extensible data structures (JobTemplate, JobInfo etc.).
+// Drmaa2Extensible is an interface which defines functions used to
+// interact with extensible data structures (JobTemplate, JobInfo etc.).
 type Drmaa2Extensible interface {
 	// Lists all implementation specific key names for
 	// a particular DRMAA2 extensible data type
@@ -126,7 +125,7 @@ type Drmaa2Extensible interface {
 	// points to data structure extension from C struct
 }
 
-// Calls the C function for listing implementation specific
+// listExtension calls the C function for listing implementation specific
 // enhancements for an object defined by the argument of the
 // function.
 func listExtensions(t StructType) []string {
@@ -157,25 +156,25 @@ func listExtensions(t StructType) []string {
 	return extensions
 }
 
-// Returns a string list containing all implementation specific
+// ListExtensions returns a string list containing all implementation specific
 // extensions of the JobTemplate object.
 func (structType *JobTemplate) ListExtensions() []string {
 	return listExtensions(JobTemplateType)
 }
 
-// Returns a string list containing all implementation specific
+// ListExtensions returns a string list containing all implementation specific
 // extensions of the Machine object.
 func (structType *Machine) ListExtensions() []string {
 	return listExtensions(MachineInfoType)
 }
 
-// Returns a string list containing all implementation specific
+// ListExtensions returns a string list containing all implementation specific
 // extensions of the Queue object.
 func (structType *Queue) ListExtensions() []string {
 	return listExtensions(QueueInfoType)
 }
 
-// Returns a string list containing all implementation specific
+// ListExtensions returns a string list containing all implementation specific
 // extensions of the JobInfo object.
 func (structType *JobInfo) ListExtensions() []string {
 	return listExtensions(JobInfoType)
@@ -215,7 +214,7 @@ func (ext *Extension) describeExtension(t StructType, extensionName string) (str
 	return "", makeLastError()
 }
 
-// Returns the description of an implementation specific
+// DescribeExtension returns the description of an implementation specific
 // JobTemplate extension as a string.
 func (jt *JobTemplate) DescribeExtension(extensionName string) (string, error) {
 	// good candidate for an init function in the session manager
@@ -249,18 +248,22 @@ func (ext *Extension) setExtension(t StructType, extension, value string) error 
 	return makeError("Extension not supported", UnsupportedAttribute)
 }
 
+// SetExtension adds an vendor specific attribute to the extensible structure.
 func (jt *JobTemplate) SetExtension(extension, value string) error {
 	return jt.setExtension(JobTemplateType, extension, value)
 }
 
+// SetExtension adds an vendor specific attribute to the extensible structure.
 func (m *Machine) SetExtension(extension, value string) error {
 	return m.setExtension(MachineInfoType, extension, value)
 }
 
+// SetExtension adds an vendor specific attribute to the extensible structure.
 func (ji *JobInfo) SetExtension(extension, value string) error {
 	return ji.setExtension(JobInfoType, extension, value)
 }
 
+// SetExtension adds an vendor specific attribute to the extensible structure.
 func (q *Queue) SetExtension(extension, value string) error {
 	return q.setExtension(QueueInfoType, extension, value)
 }
@@ -275,7 +278,7 @@ func setExtensionsIntoCObject(ptr unsafe.Pointer, elist map[string]string) {
 	}
 }
 
-// For all types which embeds the Extension struct (JobTemplate etc.)
+// GetExtension returns an extension of a extensible struct by name.
 func (e *Extension) GetExtension(extension string) (string, error) {
 	// check if any extension is stored in the Go struct
 	if e.ExtensionList != nil {
@@ -287,6 +290,8 @@ func (e *Extension) GetExtension(extension string) (string, error) {
 	return "", makeError("Extension not found", UnsupportedAttribute)
 }
 
+// Version is a DRMAA2 version type which consists of a major version
+// and a minor version.
 type Version struct {
 	Major string
 	Minor string
@@ -305,8 +310,9 @@ const InfiniteTime = int64(C.DRMAA2_INFINITE_TIME)
 // Special time value: Time or date not set
 const UnsetTime = int64(C.DRMAA2_UNSET_TIME)
 
-// Capabilities are optional functionalities defined by
-// the DRMAA2 standard.
+// Capabiliy is a type which represents the availability of optional
+// functionality of the DRMAA2 implementation. Option functionality is
+// defined by the DRMAA2 standard but not mandatory to implement.
 type Capability int
 
 const (
@@ -475,7 +481,7 @@ func (cpu CPU) String() string {
 	return "Unknown"
 }
 
-// Operating System type
+// OS is the operating system type.
 type OS int
 
 const (
@@ -661,21 +667,29 @@ type SessionManager struct {
 	//drmaaVersion string // type Version
 }
 
+// MonitoringSession is a struct which represents a DRMAA2
+// monitoring session (for cluster monitoring).
 type MonitoringSession struct {
 	name string            // internal
 	ms   C.drmaa2_msession // pointer to C drmaa2 session type
 }
 
+// JobSession is a struct which represents a DRMAA2 job session
+// for job submission and job management.
 type JobSession struct {
 	Name string            `json:"name"` // public name of job session
 	js   C.drmaa2_jsession // pointer to C drmaa2 job session type
 }
 
+// ReservationSession is a struct which represents a DRMAA reservation
+// session for handling advance reservations. The support for reservation
+// sessions is optional in the DRMAA2 standard.
 type ReservationSession struct {
 	Name string `json:"name"`
 	rs   C.drmaa2_rsession
 }
 
+// ReservationInfo is a struct which represents a reservation.
 type ReservationInfo struct {
 	ReservationId        string    `json:"reservationId"`
 	ReservationName      string    `json:"reservationName"`
@@ -686,12 +700,15 @@ type ReservationInfo struct {
 	ReservedMachines     []string  `json:"reservedMachines"`
 }
 
+// Job is a struct which represents a job in the DRM system (part of a
+// JobSession or a Monitoring session).
 type Job struct {
 	// job is private implementation specific (see struct drmaa2_j_s)
 	id           string
 	session_name string
 }
 
+// JobInfor is a struct which represents the current state of a job.
 type JobInfo struct {
 	// reference to the void* pointer which
 	// is used for extensions
@@ -1524,12 +1541,12 @@ func (sm *SessionManager) destroySession(sessionName string, jobSession bool) er
 	return nil
 }
 
-// Destroys a job session by name.
+// DestroyJobSession destroys a job session by name.
 func (sm *SessionManager) DestroyJobSession(sessionName string) error {
 	return sm.destroySession(sessionName, true)
 }
 
-// Destroys a reservation by name.
+// DestroyReservationSession destroys a reservation by name.
 func (sm *SessionManager) DestroyReservationSession(sessionName string) error {
 	return sm.destroySession(sessionName, false)
 }
@@ -1551,17 +1568,17 @@ func (sm *SessionManager) getSessionNames(jobSession bool) ([]string, error) {
 	return nil, makeLastError()
 }
 
-/* Returns all job sessions accessable to the user. */
+/* GetJobSessionNames returns all job sessions accessable to the user. */
 func (sm *SessionManager) GetJobSessionNames() ([]string, error) {
 	return sm.getSessionNames(true)
 }
 
-/* Returns all reservation sessions accessable to the user. */
+/* GetReservationSessionNames returns all reservation sessions accessable to the user. */
 func (sm *SessionManager) GetReservationSessionNames() ([]string, error) {
 	return sm.getSessionNames(false)
 }
 
-/* Returns the name of the Distributed Resource Management System. */
+/* GetDrmsName returns the name of the Distributed Resource Management System. */
 func (sm *SessionManager) GetDrmsName() (string, error) {
 	name := C.drmaa2_get_drms_name()
 	if name != nil {
@@ -1571,7 +1588,7 @@ func (sm *SessionManager) GetDrmsName() (string, error) {
 	return "", makeLastError()
 }
 
-/* Returns the version of the Distributed Resource Management System. */
+/* GetDrmsVersion returns the version of the Distributed Resource Management System. */
 func (sm *SessionManager) GetDrmsVersion() (*Version, error) {
 	cversion := C.drmaa2_get_drms_version()
 	if cversion == nil {
@@ -1641,7 +1658,7 @@ func (sm *SessionManager) RegisterEventNotification(callback *CallbackFunction) 
 	return nil
 }
 
-// Closes an open JobSession.
+// Close closes the connection to an open JobSession.
 func (js *JobSession) Close() error {
 	if js.js != nil {
 		defer C.drmaa2_jsession_free(&js.js)
@@ -1654,7 +1671,7 @@ func (js *JobSession) Close() error {
 	return nil
 }
 
-// Returns the contact string of the DRM session.
+// GetContact returns the contact string of the DRM session.
 func (js *JobSession) GetContact() (string, error) {
 	contact := C.drmaa2_jsession_get_contact(js.js)
 	if contact != nil {
@@ -1733,7 +1750,7 @@ func (js *JobSession) GetJobArray(id string) (*ArrayJob, error) {
 	return nil, makeLastError()
 }
 
-// Submits a job based on the parameters specified in the JobTemplate
+// RunJob submits a job based on the parameters specified in the JobTemplate
 // in the cluster. In case of success it returns a pointer to a Job
 // element, which can be used for further processing. In case of an
 // error the error return value is set.
@@ -1753,7 +1770,7 @@ func (js *JobSession) RunJob(jt JobTemplate) (*Job, error) {
 	return nil, makeLastError()
 }
 
-// Submits a JobTemplate to the cluster as an array job (multiple instances
+// RunBulkJobs submits a JobTemplate to the cluster as an array job (multiple instances
 // of the same job, not neccessarly running a the same point in time).
 // It requires a JobTemplate filled out at least with a RemoteCommand.
 // The begin, end and step parameters specifying how many array job
@@ -1792,7 +1809,7 @@ func (js *JobSession) waitAny(isStarted bool, jobs []Job, timeout int64) (*Job, 
 	return nil, makeLastError()
 }
 
-// Waits until any of the given jobs is started (usually in running state).
+// WaitAnyStarted waits until any of the given jobs is started (usually in running state).
 // The timeout determines after how many seconds the method should abort,
 // even when none of the given jobs was started. Special timeout values are
 // InfiniteTime and ZeroTime.
@@ -1800,7 +1817,7 @@ func (js *JobSession) WaitAnyStarted(jobs []Job, timeout int64) (*Job, error) {
 	return js.waitAny(true, jobs, timeout)
 }
 
-// Waits until any of the given jobs is finished. The timeout determines after
+// WaitAnyTerminated waits until any of the given jobs is finished. The timeout determines after
 // how many seconds the method should abort, even when none of the given jobs
 // is finished. Sepecial timeout values are InfiniteTime and ZeroTime.
 func (js *JobSession) WaitAnyTerminated(jobs []Job, timeout int64) (*Job, error) {
@@ -1863,7 +1880,7 @@ func (aj *ArrayJob) Hold() error {
 	return nil
 }
 
-// Releases all tasks of an ArrayJob from hold, if they
+// Release releases all tasks of an ArrayJob from hold, if they
 // are on hold.
 func (aj *ArrayJob) Release() error {
 	cjob := convertGoArrayJobToC(*aj)
@@ -1874,7 +1891,7 @@ func (aj *ArrayJob) Release() error {
 	return nil
 }
 
-// Terminates (usually sends a SIGKILL) all tasks of an
+// Terminate terminates (usually sends a SIGKILL) all tasks of an
 // ArrayJob.
 func (aj *ArrayJob) Terminate() error {
 	cjob := convertGoArrayJobToC(*aj)
@@ -1885,7 +1902,7 @@ func (aj *ArrayJob) Terminate() error {
 	return nil
 }
 
-// Closes an open ReservationSession.
+// Close closes an open ReservationSession.
 func (rs *ReservationSession) Close() error {
 	if rs.rs != nil {
 		defer C.drmaa2_rsession_free(&rs.rs)
