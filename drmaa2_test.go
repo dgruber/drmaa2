@@ -35,26 +35,28 @@ func TestMonitoringSessionGetAllMachines(t *testing.T) {
 		return
 	}
 	// get all machines
-	if machine, err := ms.GetAllMachines(nil); err != nil {
+	machine, err := ms.GetAllMachines(nil)
+
+	if err != nil {
 		t.Errorf("Error during GetAllMachines(nil): %s", err)
 		return
+	}
+	amount := len(machine)
+	if amount < 1 {
+		t.Errorf("Error: No machine returned in GetAllMachines(nil)")
+	}
+	// get a single machine
+	var names []string
+	names = append(names, machine[0].Name)
+	if machine2, err := ms.GetAllMachines(names); err != nil {
+		t.Errorf("Error in GetAllMachines(string): %s", err)
 	} else {
-		amount := len(machine)
-		if amount < 1 {
-			t.Errorf("Error: No machine returned in GetAllMachines(nil)")
-		}
-		// get a single machine
-		names := make([]string, 0)
-		names = append(names, machine[0].Name)
-		if machine2, err := ms.GetAllMachines(names); err != nil {
-			t.Errorf("Error in GetAllMachines(string): %s", err)
-		} else {
-			if len(machine2) != 1 {
-				t.Error("Filter for machines in GetAllMachines([]string) seems not to work")
-				return
-			}
+		if len(machine2) != 1 {
+			t.Error("Filter for machines in GetAllMachines([]string) seems not to work")
+			return
 		}
 	}
+
 	return
 }
 
