@@ -41,7 +41,9 @@ https://github.com/dgruber/drmaa2_web_app
 For a simple multi-clustering (access multiple compute clusters with the same tools) application
 based on this DRMAA2 API, please check out:
 
-https://github.com/dgruber/clusterstatus
+https://github.com/dgruber/ubercluster
+
+It implements a simple webservice API for DRMAA2.
 
 ## Documentation
 
