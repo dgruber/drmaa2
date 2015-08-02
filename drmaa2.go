@@ -1651,10 +1651,19 @@ func callbackExecution(notify C.drmaa2_notification) {
 	// coroutine calls all registered callback functions.
 }
 
-// TODO(dg) This function needs to store a CallbackFunction and
-// calls it whenever a event occured.
-func (sm *SessionManager) RegisterEventNotification(callback *CallbackFunction) error {
+type EventChannel chan Notification
+
+// TODO(dg) RegisterEventNotification needs to install a C callback
+// in the C interface.
+func (sm *SessionManager) RegisterEventNotification() (EventChannel, error) {
 	// TODO store the callback function
+	return nil, nil
+}
+
+// TODO(dg) UnregisterEventNotification turns off sending events
+// through the EventChannel. Internally a NULL callback is registered
+// so that no new events are created.
+func (sm *SessionManager) UnregisterEventNotification() error {
 	return nil
 }
 
