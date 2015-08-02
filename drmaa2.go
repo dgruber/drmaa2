@@ -20,6 +20,7 @@ Copyright 2014, 2015 Daniel Gruber, http://www.gridengine.eu
 // Please consult the DRMAA2 standard documents for more detailed
 // information (http://www.ogf.org). More examples will also be
 // published on my blog at http://www.gridengine.eu.
+
 package drmaa2
 
 import (
@@ -1179,8 +1180,7 @@ func (job *Job) GetState() JobState {
 	return Undetermined
 }
 
-// Creates a JobInfo object from the job containing
-// more detailed information about the job.
+// GetJobInfo creates a new JobInfo object out of the job.
 func (job *Job) GetJobInfo() (*JobInfo, error) {
 	cjob := convertGoJobToC(*job)
 	if cjob == nil {
@@ -1234,17 +1234,19 @@ func (job *Job) modify(operation modop) error {
 	return nil
 }
 
-// Stops a job / process from beeing executed.
+// Stops a job / process from beeing executed (typically a
+// SIGSTOP or SIGTSTP signal is sent to the job / process).
 func (job *Job) Suspend() error {
 	return job.modify(suspend)
 }
 
-// Resumes a job / process to be runnable again.
+// Resume continues to run a job / process (typically
+// a SIGCONT signal is sent to the job / process).
 func (job *Job) Resume() error {
 	return job.modify(resume)
 }
 
-// Puts the job into an hold state so that it is not
+// Hold set the job into an hold state so that it is not
 // scheduled. If the job is already running it continues
 // to run and the hold state becomes only effectice when
 // the job is rescheduled.
@@ -1252,8 +1254,8 @@ func (job *Job) Hold() error {
 	return job.modify(hold)
 }
 
-// Releases the job from hold state so that it will
-// be schedulable.
+// Release removes the hold state from the job so that it will
+// be considered as a schedulable job.
 func (job *Job) Release() error {
 	return job.modify(release)
 }
@@ -1277,14 +1279,26 @@ func (job *Job) WaitStarted(timeout int64) error {
 	return nil
 }
 
-// Waits until the job goes into one of the finished states.
-// The timeout specifies the maximum time to wait.
-// If no timeout is required use the constant InfiniteTime.
+// WaitTerminated wait until the job goes into one of the finished states.
+// The timeout specifies the maximum time to wait. If no timeout is required
+// use the constant drmaa2.InfiniteTime.
 func (job *Job) WaitTerminated(timeout int64) error {
 	cjob := convertGoJobToC(*job)
 	defer C.drmaa2_j_free(&cjob)
-	err := C.drmaa2_j_wait_terminated(cjob, (C.time_t)(timeout))
-	if err != C.DRMAA2_SUCCESS {
+	if err := C.drmaa2_j_wait_terminated(cjob, (C.time_t)(timeout)); err != C.DRMAA2_SUCCESS {
+		return makeLastError()
+	}
+	return nil
+}
+
+// Reap removes a finished job from internal storage. Without calling Reap()
+// the job will be listed in the jobs session and monitoring session as finished
+// job until the sessions are closed. Reaping jobs makes sense to avoid out
+// of memory conditions. (Remark Reap() came in DRMAA2 2015 Errata)
+func (job *Job) Reap() error {
+	cjob := convertGoJobToC(*job)
+	defer C.drmaa2_j_free(&cjob)
+	if err := C.drmaa2_j_reap(cjob); err != C.DRMAA2_SUCCESS {
 		return makeLastError()
 	}
 	return nil
@@ -1315,12 +1329,12 @@ func (sm *SessionManager) CreateJobSession(sessionName, contact string) (*JobSes
 	return &js, nil
 }
 
-// Creates a ReservationSession by name and contact string.
+// CreateReservationSessiono creates a reservation session by name and contact string.
 func (sm *SessionManager) CreateReservationSession(sessionName, contact string) (rs *ReservationSession, err error) {
 	return rs, nil
 }
 
-// Opens a MonitoringSession by name. Usually the name is ignored.
+// OpenMonitoringSession opens a MonitoringSession by name. Usually the name is ignored.
 func (sm *SessionManager) OpenMonitoringSession(sessionName string) (*MonitoringSession, error) {
 	var ms MonitoringSession
 	if sessionName != "" {
@@ -1340,7 +1354,7 @@ func (sm *SessionManager) OpenMonitoringSession(sessionName string) (*Monitoring
 	return &ms, nil
 }
 
-// Closes the MonitoringSession. TODO as method or as part of SessionManager?
+// CloseMonitoringSession closes the MonitoringSession.
 func (ms *MonitoringSession) CloseMonitoringSession() error {
 	err_cstr := C.drmaa2_close_msession(ms.ms)
 	if err_cstr == C.DRMAA2_SUCCESS {

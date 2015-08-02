@@ -60,4 +60,56 @@ func TestMonitoringSessionGetAllMachines(t *testing.T) {
 	return
 }
 
+// TestReapJob tests job reaping from internal lists by calling the job's
+// Reap() method.
+func TestReapJob(t *testing.T) {
+	var sm drmaa2.SessionManager
+	var err error
+	var js *drmaa2.JobSession
+
+	// create or open job session
+	if js, err = sm.OpenJobSession("TestReapJob"); err != nil {
+		if js, err = sm.CreateJobSession("TestReapJob", ""); err != nil {
+			t.Fatal(err)
+		}
+	}
+	defer sm.DestroyJobSession("TestReapJob")
+
+	var jt drmaa2.JobTemplate
+	jt.RemoteCommand = "/bin/sleep"
+	jt.Args = []string{"1"}
+
+	jt.OutputPath = "/dev/null"
+	jt.JoinFiles = true
+
+	job, errRun := js.RunJob(jt)
+	if errRun != nil {
+		t.Fatal(errRun)
+	}
+
+	// wait until sleep is finished
+	job.WaitTerminated(drmaa2.InfiniteTime)
+
+	// it finsihed jobs appear in all job lists (GetJobs / monitoring session GetAllJobs)
+	jl, errJL := js.GetJobs(nil)
+	if errJL != nil {
+		t.Fatalf("Error during GetJobs(): %s\n", errJL)
+	}
+
+	if len(jl) != 1 {
+		t.Logf("Job list must be 1 but it is %d\n", len(jl))
+	}
+
+	if errReap := job.Reap(); errReap != nil {
+		t.Fatalf("Reaping of job caused an error: %s\n", errReap)
+	}
+	t.Log("Reaping of job successful")
+
+	jl, errJL = js.GetJobs(nil)
+
+	if len(jl) != 0 {
+		t.Fatalf("Job list still contains reaped jobs: %d\n", len(jl))
+	}
+}
+
 // TODO add more :)
