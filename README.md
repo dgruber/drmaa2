@@ -7,6 +7,9 @@ A Go (#golang) API for job submission, job workflow management, and HPC cluster 
 
 This Go API is a wrapper around the DRMAA2 C APIs. It is not yet finished. Improvements, bug reports, and pull requests are welcome. DRMAA2 Go API is not yet standardized but a draft (based on this implementation) is available here: http://redmine.ogf.org/projects/drmaav2-go-binding/repository
 
+Note: The master branch contains now methods (like job.Reap()) which are specified in DRMAA2 2015 Errata.
+Those methods might not be (yet) in the underlying DRMAA2 C library. Hence I created a branch which is 
+compatible with older DRMAA2 C implementations (UGE_82_Compatible) which can be used instead.
 
 ## Installation
 
