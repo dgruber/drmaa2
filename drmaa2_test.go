@@ -1,6 +1,7 @@
 package drmaa2_test
 
 import (
+	"fmt"
 	"github.com/dgruber/drmaa2"
 	"testing"
 )
@@ -109,6 +110,42 @@ func TestReapJob(t *testing.T) {
 
 	if len(jl) != 0 {
 		t.Fatalf("Job list still contains reaped jobs: %d\n", len(jl))
+	}
+}
+
+func TestGetJobTemplate(t *testing.T) {
+	var jt drmaa2.JobTemplate
+	var sm drmaa2.SessionManager
+	var js *drmaa2.JobSession
+	var err error
+
+	if js, err = sm.OpenJobSession("TestGetJobTemplate"); err != nil {
+		if js, err = sm.CreateJobSession("TestGetJobTemplate", ""); err != nil {
+			t.Errorf("Failed when creating job session: %s\n", err)
+			return
+		}
+	}
+	defer sm.DestroyJobSession("TestGetJobTemplate")
+
+	jt.JobEnvironment = make(map[string]string, 0)
+	jt.JobEnvironment["one"] = "1"
+	jt.JobEnvironment["two"] = "2"
+	jt.JobEnvironment["tree"] = "3"
+
+	jt.RemoteCommand = "/bin/sleep"
+	jt.Args = []string{"0"}
+
+	job, _ := js.RunJob(jt)
+	template, _ := job.GetJobTemplate()
+
+	env := template.JobEnvironment
+
+	for k, v := range jt.JobEnvironment {
+		if env[k] != v {
+			t.Errorf("JobEnvironment is not correctly recovered (%s != %s)\n", env[k], v)
+		} else {
+			fmt.Println("Found environment variable.")
+		}
 	}
 }
 

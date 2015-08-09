@@ -1096,6 +1096,22 @@ func goDuration(sec C.time_t) time.Duration {
 	return duration
 }
 
+// goMap converts a DRMAA2 C dict into a Go string map.
+func goMap(dict C.drmaa2_dict) map[string]string {
+	if list := (C.drmaa2_list)(C.drmaa2_dict_list((C.drmaa2_dict)(dict))); list != nil {
+		if size := (int64)(C.drmaa2_list_size((C.drmaa2_list)(list))); size > 0 {
+			result := make(map[string]string, int(size))
+			for i := (int64)(0); i < size; i++ {
+				key := (*C.char)(C.drmaa2_list_get((C.drmaa2_list)(list), C.long(i)))
+				value := (*C.char)(C.drmaa2_dict_get((C.drmaa2_dict)(dict), key))
+				result[C.GoString(key)] = C.GoString(value)
+			}
+			return result
+		}
+	}
+	return nil
+}
+
 // goJobInfo converts a C Job info in a Go Job Info object
 func goJobInfo(cji C.drmaa2_jinfo) JobInfo {
 	var jinfo JobInfo
@@ -1131,7 +1147,8 @@ func convertCJtemplateToGo(t C.drmaa2_jtemplate) JobTemplate {
 	jt.ErrorPath = C.GoString(t.errorPath)
 	jt.InputPath = C.GoString(t.inputPath)
 	jt.JobCategory = C.GoString(t.jobCategory)
-	// TOOD jt.JobEnvironment
+	// TOOD jt.JobEnvironment dict
+	jt.JobEnvironment = goMap(t.jobEnvironment)
 	jt.JobName = C.GoString(t.jobName)
 	jt.JoinFiles = goBool(t.joinFiles)
 	//jt.MachineArch = C.GoString(t.machineArch)
