@@ -950,7 +950,7 @@ func convertCStringListToGo(cl C.drmaa2_string_list) []string {
 	return list
 }
 
-// conertGoListToC converts a Go list into the C DRMAA2 counterpart
+// convertGoListToC converts a Go list into the C DRMAA2 counter part
 // which needs to be freed by the caller
 func convertGoListToC(list interface{}) C.drmaa2_list {
 	var l C.drmaa2_list
