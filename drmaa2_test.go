@@ -149,4 +149,45 @@ func TestGetJobTemplate(t *testing.T) {
 	}
 }
 
+func TestOpenCloseSession(t *testing.T) {
+	// randomly open and closing a session
+	var sm drmaa2.SessionManager
+
+	js, errcjs := sm.CreateJobSession("1", "")
+	if errcjs != nil {
+		t.Errorf("Error during CreateJobsSession(1): %s", errcjs)
+	}
+	ms1, errms := sm.OpenMonitoringSession("")
+	if errms != nil {
+		t.Errorf("Error during OpenMonitoringSession(): %s", errms)
+	}
+	js2, errcjs2 := sm.CreateJobSession("2", "")
+	if errcjs2 != nil {
+		t.Errorf("Error during CreateJobsSession(2): %s", errcjs2)
+	}
+	if errmsc := ms1.CloseMonitoringSession(); errmsc != nil {
+		t.Errorf("Error during CloseMonitoringSession(): %s", errmsc)
+	}
+	js3, errcjs3 := sm.CreateJobSession("3", "")
+	if errcjs3 != nil {
+		t.Errorf("Error during CreateJobsSession(3): %s", errcjs3)
+	}
+	ms2, errms2 := sm.OpenMonitoringSession("")
+	if errms2 != nil {
+		t.Errorf("Error during OpenMonitoringSession(): %s", errms2)
+	}
+	if errmsc2 := ms2.CloseMonitoringSession(); errmsc2 != nil {
+		t.Errorf("Error during CloseMonitoringSession(): %s", errmsc2)
+	}
+	if errcljs := js.Close(); errcljs != nil {
+		t.Errorf("Error during js.Close(): %s", errcljs)
+	}
+	if errcljs3 := js3.Close(); errcljs3 != nil {
+		t.Errorf("Error during js.Close(): %s", errcljs3)
+	}
+	if errcljs2 := js2.Close(); errcljs2 != nil {
+		t.Errorf("Error during js.Close(): %s", errcljs2)
+	}
+}
+
 // TODO add more :)
