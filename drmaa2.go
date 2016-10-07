@@ -709,18 +709,25 @@ type Job struct {
 	session_name string
 }
 
-// JobInfor is a struct which represents the current state of a job.
+type SlotInfo struct {
+	// job is private implementation specific (see struct drmaa2_j_s)
+	machineName string
+	slots       int64
+}
+
+// JobInfo is a struct which represents the current state of a job.
 type JobInfo struct {
 	// reference to the void* pointer which
 	// is used for extensions
 	Extension         `xml:"-" json:"-"`
 	Id                string        `json:"id"`
+	JobName           string        `json:"jobName"`
 	ExitStatus        int           `json:"exitStatus"`
 	TerminatingSignal string        `json:"terminationSignal"`
 	Annotation        string        `json:"annotation"`
 	State             JobState      `json:"state"`
 	SubState          string        `json:"subState"`
-	AllocatedMachines []string      `json:"allocatedMachines"`
+	AllocatedMachines []SlotInfo    `json:"allocatedMachines"`
 	SubmissionMachine string        `json:"submissionMachine"`
 	JobOwner          string        `json:"jobOwner"`
 	Slots             int64         `json:"slots"`
@@ -895,6 +902,7 @@ func convertGoJobInfoToC(ji JobInfo) C.drmaa2_jinfo {
 	cji := C.drmaa2_jinfo_create()
 	// TODO JobName is missing in JobInfo (DRMAA2 issue)
 	cji.jobId = convertGoStringToC(ji.Id)
+	cji.jobName = convertGoStringToC(ji.JobName)
 	if ji.ExitStatus != C.DRMAA2_UNSET_NUM {
 		cji.exitStatus = C.int(ji.ExitStatus)
 	}
@@ -1117,11 +1125,12 @@ func goJobInfo(cji C.drmaa2_jinfo) JobInfo {
 	var jinfo JobInfo
 	/* convert C job info into Go job info */
 	ji := (C.drmaa2_jinfo_s)(*cji)
-	jinfo.AllocatedMachines = goStringList(ji.allocatedMachines)
+	//jinfo.AllocatedMachines = convertCSlotInfoListToGo(ji.allocatedMachines)
 	jinfo.Annotation = C.GoString(ji.annotation)
 	jinfo.CPUTime = (int64)(ji.cpuTime)
 	jinfo.ExitStatus = (int)(ji.exitStatus)
 	jinfo.Id = C.GoString(ji.jobId)
+	jinfo.JobName = C.GoString(ji.jobName)
 	jinfo.JobOwner = C.GoString(ji.jobOwner)
 	jinfo.QueueName = C.GoString(ji.queueName)
 	jinfo.Slots = (int64)(ji.slots)
@@ -1207,6 +1216,7 @@ func (job *Job) GetJobInfo() (*JobInfo, error) {
 
 	cji := C.drmaa2_j_get_info(cjob)
 	if cji == nil {
+		log.Printf("GetJobInfo: %s cji is nil\n", C.GoString(C.drmaa2_j_get_id(cjob)))
 		return nil, makeLastError()
 	}
 	defer C.drmaa2_jinfo_free(&cji)
@@ -1315,9 +1325,9 @@ func (job *Job) WaitTerminated(timeout int64) error {
 func (job *Job) Reap() error {
 	cjob := convertGoJobToC(*job)
 	defer C.drmaa2_j_free(&cjob)
-	if err := C.drmaa2_j_reap(cjob); err != C.DRMAA2_SUCCESS {
-		return makeLastError()
-	}
+	//	if err := C.drmaa2_j_reap(cjob); err != C.DRMAA2_SUCCESS {
+	//		return makeLastError()
+	//	}
 	return nil
 }
 
@@ -1405,6 +1415,31 @@ func convertCJobListToGo(jlist C.drmaa2_j_list) []Job {
 		jobs = append(jobs, j)
 	}
 	return jobs
+}
+
+func convertCSlotInfoListToGo(silist C.drmaa2_slotinfo_list) []SlotInfo {
+	if silist == nil {
+		return nil
+	}
+	sil := (C.drmaa2_list)(silist)
+	count := (int64)(C.drmaa2_list_size(sil))
+	// ...
+	sis := make([]SlotInfo, 0)
+	for i := (int64)(0); i < count; i++ {
+		csi := (C.drmaa2_slotinfo)(C.drmaa2_list_get(sil, C.long(i)))
+		if csi == nil {
+			continue
+		}
+		// copy C implementation specific
+		// slotInfo struct values -> therefore we need
+		// access to Grid Engine internal header file
+		var gosi SlotInfo
+		ccsi := (C.drmaa2_slotinfo_s)(*csi)
+		gosi.machineName = C.GoString(ccsi.machineName)
+		// gosi.slots = (int64)C.long(ccsi.slots)
+		sis = append(sis, gosi)
+	}
+	return sis
 }
 
 // Creates a slice of Queues based on C queue list.
