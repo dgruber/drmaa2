@@ -22,6 +22,7 @@ func main() {
 	// meaning that GetAllJobs() can be called as often as required,
 	// it does not trigger addional communication to the qmaster
 	// process.
+	start := time.Now()
 	if jobs, err := ms.GetAllJobs(nil); err != nil {
 		fmt.Printf("Error during GetAllJobs() call: %s\n", err)
 	} else {
@@ -35,4 +36,5 @@ func main() {
 		}
 
 	}
+	fmt.Printf("Monitoring jobs took [%s]\n", time.Since(start).String())
 }
