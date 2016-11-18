@@ -89,7 +89,8 @@ func TestReapJob(t *testing.T) {
 	}
 
 	// wait until sleep is finished
-	job.WaitTerminated(drmaa2.InfiniteTime)
+	//job.WaitTerminated(drmaa2.InfiniteTime)
+	job.WaitTerminated(60)
 
 	// it finsihed jobs appear in all job lists (GetJobs / monitoring session GetAllJobs)
 	jl, errJL := js.GetJobs(nil)

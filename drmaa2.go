@@ -1206,6 +1206,9 @@ func goJobInfo(cji C.drmaa2_jinfo) JobInfo {
 	if ji.jobId != nil {
 		jinfo.Id = C.GoString(ji.jobId)
 	}
+	if ji.jobName != nil {
+		jinfo.JobName = C.GoString(ji.jobName)
+	}
 	if ji.jobOwner != nil {
 		jinfo.JobOwner = C.GoString(ji.jobOwner)
 	}
@@ -1321,6 +1324,7 @@ const (
 	hold
 	release
 	terminate
+	terminate_forced
 )
 
 func (job *Job) modify(operation modop) error {
@@ -1338,6 +1342,8 @@ func (job *Job) modify(operation modop) error {
 		ret = C.drmaa2_j_release(cjob)
 	case terminate:
 		ret = C.drmaa2_j_terminate(cjob)
+	case terminate_forced:
+		ret = C.drmaa2_j_terminate_forced(cjob)
 	}
 	defer C.drmaa2_j_free(&cjob)
 	if ret != C.DRMAA2_SUCCESS {
@@ -1375,6 +1381,11 @@ func (job *Job) Release() error {
 // Terminate tells the resource manager to kill the job.
 func (job *Job) Terminate() error {
 	return job.modify(terminate)
+}
+
+// Terminate tells the resource manager to kill the job.
+func (job *Job) TerminateForced() error {
+	return job.modify(terminate_forced)
 }
 
 // Blocking wait until the job is started. The timeout

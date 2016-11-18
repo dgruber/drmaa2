@@ -13,8 +13,8 @@ ARCH=`$SGE_ROOT/util/arch`
 
 export CGO_LDFLAGS="-L$SGE_ROOT/lib/$ARCH/"
 export CGO_CFLAGS="-I$SGE_ROOT/include"
-export LD_LIBRARY_PATH=$SGE_ROOT/lib/lx-amd64
+export LD_LIBRARY_PATH=$SGE_ROOT/lib/$ARCH
 
 go build -a
-go install 
-go test
+go install
+# go test -v
