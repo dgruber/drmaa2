@@ -2,7 +2,8 @@ drmaa2
 ======
 [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/dgruber/drmaa2)
 [![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://raw.githubusercontent.com/dgruber/drmaa2/master/COPYING)
-[![Go Report Card](http://goreportcard.com/badge/dgruber/drmaa2)](http://goreportcard.com/report/dgruber/drmaa2)
+
+NOTE THAT THIS A COMPLETELY BROKEN IMPLEMENTATION AND COMPLETELY OUT OF DATE JUST HERE FOR KEEPING HISTORY ALIVE :-D
 
 A Go (#golang) API for job submission, job workflow management, and HPC cluster monitoring based on the open OGF DRMAA2 standard (http://www.drmaa.org / http://www.ogf.org).
 
@@ -13,6 +14,8 @@ Those methods might not be (yet) in the underlying DRMAA2 C library. Hence I cre
 compatible with older DRMAA2 C implementations (UGE_82_Compatible) which can be used instead.
 
 ## Installation
+
+NOTE THAT THIS A COMPLETELY BROKEN IMPLEMENTATION AND COMPLETELY OUT OF DATE JUST HERE FOR KEEPING HISTORY ALIVE :-D
 
 1. Download / Install Univa Grid Engine (see http://www.univa.com)
    Univa Grid Engine is currently the only cluster scheduler which supports
@@ -37,6 +40,8 @@ compatible with older DRMAA2 C implementations (UGE_82_Compatible) which can be 
 
 ## Usage
 
+NOTE THAT THIS A COMPLETELY BROKEN IMPLEMENTATION AND COMPLETELY OUT OF DATE JUST HERE FOR KEEPING HISTORY ALIVE :-D
+
 Please check out a detailed example which exploits the monitoring session and creates a
 webserver hosting the cluster status information.
 
@@ -50,5 +55,9 @@ https://github.com/dgruber/ubercluster
 It implements a simple webservice API for DRMAA2.
 
 ## Documentation
+
+NOTE THAT THIS A COMPLETELY BROKEN IMPLEMENTATION AND COMPLETELY OUT OF DATE JUST HERE FOR KEEPING HISTORY ALIVE :-D
+
+Better not read the documentation. Move to something more advanced...
 
 https://godoc.org/github.com/dgruber/drmaa2
