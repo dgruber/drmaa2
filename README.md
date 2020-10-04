@@ -5,6 +5,8 @@ drmaa2
 
 NOTE THAT THIS A COMPLETELY BROKEN IMPLEMENTATION AND COMPLETELY OUT OF DATE JUST HERE FOR KEEPING HISTORY ALIVE :-D
 
+PLEASE CONSIDER TO USE WHICH SUPPORTS A BROADER RANGE OF MODERN WORKLOAD MANAGERS: https://github.com/dgruber/drmaa2os
+
 A Go (#golang) API for job submission, job workflow management, and HPC cluster monitoring based on the open OGF DRMAA2 standard (http://www.drmaa.org / http://www.ogf.org).
 
 This Go API is a wrapper around the DRMAA2 C APIs. It is not yet finished. Improvements, bug reports, and pull requests are welcome. DRMAA2 Go API is not yet standardized but a draft (based on this implementation) is available here: http://redmine.ogf.org/projects/drmaav2-go-binding/repository
@@ -16,6 +18,8 @@ compatible with older DRMAA2 C implementations (UGE_82_Compatible) which can be 
 ## Installation
 
 NOTE THAT THIS A COMPLETELY BROKEN IMPLEMENTATION AND COMPLETELY OUT OF DATE JUST HERE FOR KEEPING HISTORY ALIVE :-D
+
+PLEASE CONSIDER TO USE WHICH SUPPORTS A BROADER RANGE OF MODERN WORKLOAD MANAGERS: https://github.com/dgruber/drmaa2os
 
 1. Download / Install Univa Grid Engine (see http://www.univa.com)
    Univa Grid Engine is currently the only cluster scheduler which supports
